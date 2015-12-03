@@ -48,6 +48,10 @@ try:
 except ImportError:
     pycurl = None
 
+import sys 
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 
 class WxPayConf_pub(object):
     """配置账号信息"""
@@ -367,8 +371,11 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         """获取prepay_id"""
         self.postXml()
         self.result = self.xmlToArray(self.response)
-        prepay_id = self.result["prepay_id"]
-        return prepay_id
+        if "return_code" in self.result and self.result["return_code"].upper() == "SUCCESS":
+            prepay_id = self.result["prepay_id"]
+            return prepay_id
+        else: 
+            return None
 
 
 class OrderQuery_pub(Wxpay_client_pub):
@@ -606,8 +613,6 @@ def test():
     assert c.get("http://www.baidu.com")[:15] == "<!DOCTYPE html>"
     c2 = HttpClient()
     assert id(c) == id(c2)
-
-
 
 if __name__ == "__main__":
     test()
